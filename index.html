@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+      integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>Weather App</title>
+  </head>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    #wa-bg {
+      min-height: 100vh;
+      background-color: #151638;
+      position: relative;
+    }
+
+    #wa-holder {
+      /*background-color: #0b0c1e;*/
+      /*background: rgb(16,16,59);*/
+      /* width: 270px; */
+      /* height: 470px; */
+      /*border: 1px solid #fff;*/
+      /* background-color: #0b0c1ea1; */
+      background: linear-gradient(
+        45deg,
+        rgba(16, 16, 59, 1) 0%,
+        rgba(42, 42, 80, 1) 100%
+      );
+      border: 1px solid #2a2d56;
+      width: max(270px, 40vh);
+      height: max(470px, 70vh);
+      border-radius: 10px;
+      position: absolute;
+      bottom: 50%;
+      right: 50%;
+      transform: translate(50%, 50%);
+      overflow: hidden;
+    }
+
+    #wa-holder::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0px;
+      left: 0px;
+      background-image: url(images/17.png);
+      background-position: center center;
+      background-size: contain;
+      background-repeat: no-repeat;
+      filter: blur(16px);
+      -webkit-filter: blur(16px);
+      mix-blend-mode: soft-light;
+      opacity: 0.7;
+      z-index: -1;
+    }
+
+    #wa-topbar {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px;
+      /* padding: 8px 10px; */
+    }
+
+    #wa-topbar > div {
+      font-weight: 400;
+      font-size: 11px;
+      color: #9b9b9d;
+      text-transform: uppercase;
+    }
+
+    #wa-location {
+      /*text-align: center;*/
+      color: #9b9b9d;
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      padding: 40px 20px;
+    }
+
+    #wa-location i,
+    #wa-location span {
+      color: #fff;
+    }
+
+    #wa-location span {
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      margin-left: 5px;
+    }
+
+    #wa-day {
+      text-transform: uppercase;
+      font-weight: 600;
+      font-size: 20px;
+      letter-spacing: 0.08em;
+      color: #fff;
+      margin: 12px 0px;
+    }
+
+    #wa-img {
+      /* max-height: 140px;
+            display: block;
+            margin: 20px auto 40px; */
+      max-height: 160px;
+      display: block;
+      margin: 0px auto 20px;
+    }
+
+    #wa-weather {
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+      letter-spacing: 0.02em;
+      padding: 5px 20px;
+    }
+
+    #wa-temp {
+      color: #ffffff;
+      font-size: 92px;
+      font-weight: 500;
+      text-align: center;
+      padding: 5px 20px 5px 45px;
+      display: flex;
+      align-items: start;
+      justify-content: center;
+    }
+
+    #wa-deg-sign,
+    #wa-temp-unit {
+      color: #f2c736;
+      font-size: 26px;
+      font-weight: 500;
+      padding-top: 20px;
+    }
+  </style>
+
+  <body>
+    <div id="wa-bg">
+      <div id="wa-holder">
+        <div id="wa-topbar">
+          <div id="wa-date">11 Jul 2022</div>
+          <div id="wa-time">09:08 pm</div>
+        </div>
+
+        <div id="wa-location">
+          <i class="fa-solid fa-location-dot"></i>
+          <span>{%location%}</span>, {%country%}
+          <div id="wa-day">Day</div>
+        </div>
+
+        <img id="wa-img" src="images/17.png" />
+
+        <div id="wa-weather">Rain with lighting</div>
+        <div id="wa-temp">
+          {%temp%}<span id="wa-deg-sign">&deg;</span
+          ><span id="wa-temp-unit">C</span>
+        </div>
+        <!-- can add min and max temp -->
+      </div>
+    </div>
+
+    <script>
+      let date = document.getElementById('wa-date')
+      let day = document.getElementById('wa-day')
+      let time = document.getElementById('wa-time')
+      let weatherIcon = document.getElementById('wa-img')
+
+      const daysArray = [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+      ]
+
+      const monthsArray = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ]
+
+      let newDate = new Date()
+
+      const getCurrentDay = () => {
+        let currentDay = daysArray[newDate.getDay()]
+        return currentDay
+      }
+
+      const getCurrentDate = () => {
+        const yyyy = newDate.getFullYear()
+        let mmm = monthsArray[newDate.getMonth() + 1] // Months start at 0!
+        let dd = newDate.getDate()
+
+        if (dd < 10) dd = '0' + dd
+
+        const formattedDate = `${dd} ${mmm} ${yyyy}`
+        return formattedDate
+      }
+
+      const getCurrentTime = () => {
+        let hours = newDate.getHours()
+        let minutes = newDate.getMinutes()
+        let ampm = hours >= 12 ? 'pm' : 'am'
+        hours = hours % 12
+        hours = hours ? hours : 12 // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0' + minutes : minutes
+        let formattedTime = hours + ':' + minutes + ' ' + ampm
+        return formattedTime
+      }
+
+      day.innerHTML = getCurrentDay()
+      date.innerHTML = getCurrentDate()
+      time.innerHTML = getCurrentTime()
+    </script>
+  </body>
+</html>

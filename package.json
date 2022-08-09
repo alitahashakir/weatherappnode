@@ -9,6 +9,7 @@
   "author": "Ali Taha Shakir",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.0.1",
     "requests": "^0.3.0"
   },
   "devDependencies": {

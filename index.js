@@ -1,5 +1,8 @@
+require('dotenv').config()
+
 const http = require('http')
 const fs = require('fs')
+const path = require('path')
 const requests = require('requests')
 
 const homeFile = fs.readFileSync('index.html', 'utf-8')
@@ -13,6 +16,7 @@ const replacecVal = (tempVal, orgVal) => {
   )
   newVal = newVal.replace('{%location%}', orgVal.name)
   newVal = newVal.replace('{%country%}', orgVal.sys.country)
+  newVal = newVal.replace('{%weatherIcon%}', orgVal.weather[0].icon)
 
   return newVal
 }
@@ -20,7 +24,7 @@ const replacecVal = (tempVal, orgVal) => {
 const server = http.createServer((req, res) => {
   if (req.url == '/') {
     requests(
-      'https://api.openweathermap.org/data/2.5/weather?lat=24.86&lon=66.99&appid={API KEY}'
+      `https://api.openweathermap.org/data/2.5/weather?lat=24.86&lon=66.99&appid=${process.env.API_KEY}`
     )
       .on('data', function (chunk) {
         const objData = JSON.parse(chunk)
@@ -30,6 +34,8 @@ const server = http.createServer((req, res) => {
         const realTimeData = arrData
           .map((item) => replacecVal(homeFile, item))
           .join('')
+
+        res.writeHead(200, { 'Content-Type': 'text/html' })
         res.write(realTimeData)
       })
       .on('end', function (err) {
@@ -37,6 +43,11 @@ const server = http.createServer((req, res) => {
         res.end()
         console.log('end')
       })
+  } else if (req.url.match('.png$')) {
+    let imagePath = path.join(__dirname, 'public', req.url)
+    let fileStream = fs.createReadStream(imagePath)
+    res.writeHead(200, { 'Content-Type': 'image/png' })
+    fileStream.pipe(res)
   }
 })
 

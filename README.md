@@ -5,7 +5,7 @@
 ![](https://i.ibb.co/HNB38mK/weatherapp.jpg)
 
 ## Data Sources
-Weather data is provided by [Open Weather API](https://openweathermap.org/), and you need to register an account to obtain its key.
+Weather data is provided by [Open Weather API](https://openweathermap.org/), you need to register an account to obtain its key.
 
 ## Icons
 Icons were taken from [3D Weather Icons Free | Aesthetic Weather Icon](https://uifreebies.net/icon/3d-weather-icons-free), and [Fontawesome](https://fontawesome.com/)
